@@ -48,7 +48,7 @@ int main() {
     }
     end = clock();
     total_time = (double)(end-begin) / CLOCKS_PER_SEC;
-    printf("Array access time time elapsed: %f seconds\n", total_time);
+    printf("Array access time: %f seconds\n", total_time);
 
     // test linked list access time
     begin = clock();
@@ -62,7 +62,7 @@ int main() {
     }
     end = clock();
     total_time = (double)(end-begin) / CLOCKS_PER_SEC;
-    printf("Linked list access time elapsed: %f seconds\n", total_time);
+    printf("Linked list access time: %f seconds\n", total_time);
 
     // free memory (later)
     free(arr);
