@@ -2,30 +2,35 @@
 #include <stdlib.h>
 #include <time.h>
 
+#define ARRAY_LENGTH 1000 * 1000
+#define LOOP_AMOUNT 1000 * 1000 * 1000
+#define ACCESS_INDEX 0
+
 typedef struct ListNode {
     int value;
     struct ListNode *next;
 } ListNode;
 
+void benchmark_array(int *arr, int index);
+void benchmark_linked_list(ListNode *list, int index);
+
 int main() {
     clock_t begin = clock();
     // initialize array and linked list
-    const int arr_length = 1000 * 1000;
-    int *arr = (int*) malloc(sizeof(int) * arr_length);
+    int *arr = (int*) malloc(sizeof(int) * ARRAY_LENGTH);
 
     // initialize linked list and value of both linked list and array
     ListNode *list = (ListNode*) malloc(sizeof(ListNode));
-    list->value = 67;
-    printf("first node value: %d\n", list->value);
+    list->value = 0;
     ListNode *current_node = list;
 
-    for (int i = 0; i < arr_length; i++) {
+    for (int i = 0; i < ARRAY_LENGTH; i++) {
         arr[i] = i;
     }
 
-    for (int i = 0; i < arr_length-1; i++) {
+    for (int i = 0; i < ARRAY_LENGTH-1; i++) {
         ListNode *new_node = (ListNode*) malloc(sizeof(ListNode));
-        new_node->value = i;
+        new_node->value = i + 1;
         current_node->next = new_node;
         current_node = new_node;
     }
@@ -34,28 +39,45 @@ int main() {
     double total_time = (double)(end-begin) / CLOCKS_PER_SEC;
     printf("initialization time: %f\n", total_time);
 
-    // testing access time
-    int access_index = 10000;
+    printf("Testing element access time of index %d with %d loops\n", ACCESS_INDEX, LOOP_AMOUNT);
 
     // test array access time
     begin = clock();
-    int value_arr = arr[access_index];
+    for (int i = 0; i < LOOP_AMOUNT; i++) {
+        int value_arr = arr[ACCESS_INDEX];
+    }
     end = clock();
     total_time = (double)(end-begin) / CLOCKS_PER_SEC;
-    printf("array value: %d\n",value_arr);
-    printf("Array access time time elapsed: %f\n", total_time);
+    printf("Array access time time elapsed: %f seconds\n", total_time);
 
     // test linked list access time
     begin = clock();
     current_node = list;
-    for (int i = 0; i <= access_index; i++) {
+    for (int i = 0; i < LOOP_AMOUNT; i++) {
+        benchmark_linked_list(list, ACCESS_INDEX);
+    }
+    end = clock();
+    total_time = (double)(end-begin) / CLOCKS_PER_SEC;
+    printf("Linked list access time elapsed: %f seconds\n", total_time);
+
+    // free memory (later)
+    free(arr);
+    current_node = list;
+    for (int i = 0; i < ARRAY_LENGTH; i++) {
+        ListNode *free_node = current_node;
+        current_node = current_node->next;
+        free(free_node);
+    }
+}
+
+void benchmark_array(int *arr, int index){
+    int value_arr = arr[index];
+}
+
+void benchmark_linked_list(ListNode *list, int index){
+    ListNode *current_node = list;
+    for (int i = 0; i < index; i++) {
         current_node = current_node->next;    
     }
     int value_linked_list = current_node->value;
-    end = clock();
-    total_time = (double)(end-begin) / CLOCKS_PER_SEC;
-    printf("linked list value: %d\n",value_linked_list);
-    printf("Linked list access time elapsed: %f\n", total_time);
-
-    // free memory (later)
 }
